@@ -14,10 +14,10 @@ app = FastAPI()
 def startup_event():
     populate_db()
 
-app.include_router(fruits_router)
-app.include_router(veg_router)
-app.include_router(meat_router)
-app.include_router(dairy_router)
+app.include_router(fruits_router, prefix="/api")
+app.include_router(veg_router, prefix="/api")
+app.include_router(meat_router, prefix="/api")
+app.include_router(dairy_router, prefix="/api")
 
 @app.get("/api/products")
 def get_all_products():

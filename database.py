@@ -20,6 +20,9 @@ def populate_db():
         )
     ''')
     
+    # Clear existing data to prevent UNIQUE constraint errors on reload
+    cursor.execute("DELETE FROM products")
+    
     # Read CSV and insert
     with open('market_data.csv', 'r') as f:
         reader = csv.reader(f)
@@ -33,3 +36,33 @@ def populate_db():
     conn.commit()
     conn.close()
     print("Database populated successfully.")
+
+def create_product(name, category, price):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO products (name, category, price) VALUES (?, ?, ?)', (name, category, price))
+    conn.commit()
+    conn.close()
+    return cursor.lastrowid
+
+def get_products_by_category(category):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM products WHERE category=?", (category,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+def update_product(product_id, name, price):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE products SET name=?, price=? WHERE id=?', (name, price, product_id))
+    conn.commit()
+    conn.close()
+
+def delete_product(product_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM products WHERE id=?', (product_id,))
+    conn.commit()
+    conn.close()
